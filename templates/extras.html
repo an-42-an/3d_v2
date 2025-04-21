@@ -1,0 +1,35 @@
+<script>
+    function validateForm() {
+        const u = {{ u | tojson }};
+        let user = document.forms["loginform"]["user"].value;
+        let pwd = document.forms["loginform"]["pwd"].value;
+        let valid = u.some(pair => pair[0] === user && pair[1] === pwd);
+        if (!valid) {
+            alert("Invalid user credentials");
+            return false;
+        } 
+      }
+    </script>
+    {% for surf in board%}
+    <div class="column"> 
+    <table border = "2" >
+    {% for row in surf %}
+      <tr>
+        {% for cell in row %}
+        {% if cell %}
+        <td> {{-cell}} </td>
+        {% else %}
+      <td><input type="radio" name="move" value="{{ loop.parent.parent.index0 }},{{ loop.parent.index0 }},{{ loop.index0 }}" form="moveform"></td>
+         {% endif %}
+        {%- endfor %}    
+      </tr>
+    {%- endfor %}
+    </table>
+    </div>
+    {%- endfor %}
+
+    else:
+        move = request.form.get('move','1,2,3') 
+        surf, row, cell = map(int, move.split(','))
+        games[game][1][surf][row][cell]=games[game][0][id]
+        return render_template('game.html',game=game,board=games[game][1],id1=id)

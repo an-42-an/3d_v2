@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> LOGIN </title>
+</head>
+<body>
+<h1> {{msg}} </h1>
+<form action="/" method="POST" name="loginform"> <!--onsubmit="return validateForm()" -->
+    <div>
+    <label>Username:</label>
+    <input type="text" name="user" required />
+    </div>
+    <div>
+    <label>Password</label>
+    <input type="text" name="pwd" required />
+    </div>
+    <br>
+    <div>
+    <input type="submit" value = "Submit">
+    </div>
+    </form>
+<br>
+<a href="/create">Or create new account</a>
+</body>
+</html>

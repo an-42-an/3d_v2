@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> JOIN </title>
+</head>
+<body>
+<p>Available games. Click to join:</p>
+<br>
+{%for a in g%}
+<form method="POST" action="/join/{{id}}">
+<button name="game" value={{a}}>{{a}}</button>
+</form>
+{% endfor %}
+</body>

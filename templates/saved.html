@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title> Saved Games </title>
+</head>
+<body>
+<h1> Saved Games </h1>
+<ul>
+{% for cell in g %}
+<li>  
+<a href='/saved/{{id}}/{{cell}}'>{{cell}}</a>
+    </li>
+{% endfor %}
+</ul>
+</body>
+<a href='/home/{{id}}'>Go to home</a>
+</html>

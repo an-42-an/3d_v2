@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> Game {{game}} </title>
+<meta http-equiv="refresh" content="10">
+<style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    .row {
+      display: flex;
+      margin-left:-5px;
+      margin-right:-5px;
+    }
+    
+    .column {
+      flex: 50%;
+      padding: 5px;
+    }
+    
+    table {
+      border-collapse: collapse;
+      border-spacing: 0;
+      width: 100%;
+      border: 1px solid black;
+    }
+    
+    td {
+      text-align: left;
+      padding: 10px;
+      border: 1px solid black;
+      height: 50px
+    }
+    
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+      
+    }
+
+    #green {background-color:lightgreen}
+    
+</style>
+</head>
+<body>
+<div class="row">
+    
+        {% for surf_index in range(board|length) %}
+          <div class="column"> 
+            <table border="2">
+              {% set surf = board[surf_index] %}
+              {% for row_index in range(surf|length) %}
+                <tr>
+                  {% set row = surf[row_index] %}
+                  {% for cell_index in range(row|length) %}
+                    {% set cell = row[cell_index] %}
+                    {% if cell %} 
+                    <td>{{ cell }}</td>
+                    {% else %}
+                    <td id="green" onclick="selectMove(this)" data-coords="{{ surf_index }},{{ row_index }},{{ cell_index }}">
+                        &nbsp;
+                      </td>
+                    {% endif %}
+                  {% endfor %}
+                </tr>
+              {% endfor %}
+            </table>
+          </div>
+        {% endfor %}
+        
+</div>
+<form method="GET" action="/join/{{id1}}/{{game}}" id="moveform">
+    <input type="hidden" name="move" id="moveInput">
+    <input type="hidden" name="user" value="{{id1}}">
+<button type="submit">Submit Move</button>
+      </form>
+<script>
+        function selectMove(cell) {
+          // Remove previous selection
+          document.querySelectorAll('td').forEach(td => td.style.backgroundColor = "");
+          document.getElementById('green').style.backgroundColor = "lightgreen";
+          // Mark current cell
+          cell.style.backgroundColor = "blue";
+          const coords = cell.dataset.coords;
+          console.log("Clicked coords:", coords);
+          // Store coordinates
+          document.getElementById('moveInput').value = cell.dataset.coords;
+        }
+        </script>
+</body>
+<br>
+<ul>
+    {% for k,v in p.items() %}
+    <li>  
+    {{k}} : {{v}}
+        </li>
+    {% endfor %}
+    </ul>
+</html>

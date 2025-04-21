@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> Game {{game}} </title>
+
+<style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    .row {
+      display: flex;
+      margin-left:-5px;
+      margin-right:-5px;
+    }
+    
+    .column {
+      flex: 50%;
+      padding: 5px;
+    }
+    
+    table {
+      border-collapse: collapse;
+      border-spacing: 0;
+      width: 100%;
+      border: 1px solid black;
+    }
+    
+    td {
+      text-align: left;
+      padding: 10px;
+      border: 1px solid black;
+      height: 50px
+    }
+    
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+      
+    }
+    
+</style>
+</head>
+<body>
+<div class="row">
+    
+        {% for surf_index in range(board|length) %}
+          <div class="column"> 
+            <table border="2">
+              {% set surf = board[surf_index] %}
+              {% for row_index in range(surf|length) %}
+                <tr>
+                  {% set row = surf[row_index] %}
+                  {% for cell_index in range(row|length) %}
+                    {% set cell = row[cell_index] %}
+                    
+                    <td style="{% if (surf_index, row_index, cell_index) in l %}background-color: gold;{% endif %}">
+                        {{ cell }}</td>
+                    
+                  {% endfor %}
+                </tr>
+              {% endfor %}
+            </table>
+          </div>
+        {% endfor %}
+        
+</div>
+</body>
+<br>
+<ul>
+    {% for k,v in p.items() %}
+    <li>  
+    {{k}} : {{v}}
+        </li>
+    {% endfor %}
+    </ul>
+<br>
+<a href="/home/{{id1}}">Go to home</a>
+</html>
