@@ -58,9 +58,9 @@ def push_everything():
     if 'origin' not in remotes:
         subprocess.run(['git', 'remote', 'add', 'origin', REPO], check=True)
     subprocess.run(['git', 'checkout', 'main'], check=True)
-    #subprocess.run(['git', 'pull', 'origin', 'main', '--rebase'], check=True)
+    subprocess.run(['git', 'pull', 'origin', 'main', '--rebase'], check=True)
     subprocess.run(['git', 'add', '.'], check=True)
-    subprocess.run(['git', 'commit', '-m', 'Update user data'], check=True)
+    subprocess.run(['git', 'commit', '-m', 'Update user data render'], check=True)
     subprocess.run(['git', 'push', 'origin', 'main'], check=True)
     os.chdir(original_dir)
 
