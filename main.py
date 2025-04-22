@@ -17,7 +17,7 @@ original_dir = os.getcwd()
 GIT_USER = os.environ['GIT_USER']
 GIT_EMAIL = os.environ['GIT_EMAIL']
 GIT_TOKEN = os.environ['GIT_TOKEN']
-REPO = f'https://{GIT_USER}:{GIT_TOKEN}@github.com/{GIT_USER}/3d_v1.git'
+REPO = f'https://{GIT_USER}:{GIT_TOKEN}@github.com/{GIT_USER}/3d_v2.git'
 REPO_DIR = os.environ.get('REPO_DIR',os.getcwd())#'/opt/render/project/src'  # default Render working directory
 
 def setup_git():
