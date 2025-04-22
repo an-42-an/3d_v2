@@ -50,7 +50,7 @@ def push_all_data(commit_msg='Update user data'):
     subprocess.run(['git', 'commit', '-m', commit_msg])
     subprocess.run(['git', 'push', REPO, 'main'], check=True)
     os.chdir(original_dir)
-def push_everything():
+def push_everything_v1():
     setup_git()
     os.chdir(REPO_DIR)
     result = subprocess.run(['git', 'remote'], capture_output=True, text=True)
@@ -63,7 +63,32 @@ def push_everything():
     subprocess.run(['git', 'commit', '-m', 'Update user data render'], check=True)
     subprocess.run(['git', 'push', 'origin', 'main'], check=True)
     os.chdir(original_dir)
+def push_everything():
+    setup_git()
+    os.chdir(REPO_DIR)
+    result = subprocess.run(['git', 'remote'], capture_output=True, text=True)
+    remotes = result.stdout.strip().split('\n')
+    if 'origin' not in remotes:
+        subprocess.run(['git', 'remote', 'add', 'origin', REPO], check=True)
 
+    subprocess.run(['git', 'checkout', 'main'], check=True)
+    # Handle possible pull errors
+    try:
+        subprocess.run(['git', 'pull', 'origin', 'main', '--rebase'], check=True)
+    except subprocess.CalledProcessError:
+        # Abort rebase if stuck
+        subprocess.run(['git', 'rebase', '--abort'], check=False)
+        # Reset to origin/main (WARNING: This discards local changes!)
+        subprocess.run(['git', 'fetch', 'origin'], check=True)
+        subprocess.run(['git', 'push', 'origin', 'main', '--force'], check=True)
+    subprocess.run(['git', 'add', '.'], check=True)
+    try:
+        subprocess.run(['git', 'commit', '-m', 'Update user data render'], check=True)
+    except subprocess.CalledProcessError:
+        # No changes to commit
+        pass
+    subprocess.run(['git', 'push', 'origin', 'main'], check=True)
+    os.chdir(original_dir)
 f=open('users.csv','r',newline='')
 k=csv.reader(f)
 u=[a[0] for a in k]
