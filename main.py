@@ -188,7 +188,10 @@ def create():
         k=csv.writer(f)
         k.writerow([user,pwd])
         f.close()
-        os.mkdir(f'./saved/%s'%(user,))
+        try:
+            os.mkdir(f'./saved/%s'%(user,))
+        except:
+            pass
         f=open(f'./saved/%s/games.dat'%(user,),'wb')
         f.close()
         push_everything()
