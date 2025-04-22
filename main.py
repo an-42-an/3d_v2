@@ -68,15 +68,18 @@ f=open('users.csv','r',newline='')
 k=csv.reader(f)
 u=[a[0] for a in k]
 f.close()
+c=0
 for a in u:
     try:
         f=open(f'./saved/%s/games.dat'%(a,),'ab')
         f.close()
     except:
+        c=1
         os.mkdir(f'./saved/%s'%(a,))
         f=open(f'./saved/%s/games.dat'%(a,),'wb')
         f.close()
-push_everything()
+if c:
+    push_everything()
 
 class User(UserMixin):
     def __init__(self, id,pwd):
@@ -314,7 +317,7 @@ def save(id,game):
         f=open(f'./saved/%s/games.dat'%(id,),'wb')
         pickle.dump(k,f)
         f.close()
-        push_all_data()
+        push_everything()
         return redirect(f'/home/{id}')
 
 @app.route('/saved/<id>',methods=['GET','POST'])
