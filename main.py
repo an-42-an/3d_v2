@@ -24,14 +24,6 @@ def setup_git():
     subprocess.run(['git', 'config', '--global', 'user.email', GIT_EMAIL])
     subprocess.run(['git', 'config', '--global', 'user.name', GIT_USER])
 
-def push_file_to_git(relative_path, commit_msg='Update file'):
-    setup_git()
-    os.chdir(REPO_DIR)
-    subprocess.run(['git', 'add', relative_path])
-    subprocess.run(['git', 'commit', '-m', commit_msg])
-    subprocess.run(['git', 'push', REPO, 'main'], check=True)
-    os.chdir(original_dir)
-
 def push_all_data(commit_msg='Update user data'):
     setup_git()
     os.chdir(REPO_DIR)
@@ -50,6 +42,7 @@ def push_all_data(commit_msg='Update user data'):
     subprocess.run(['git', 'commit', '-m', commit_msg])
     subprocess.run(['git', 'push', REPO, 'main'], check=True)
     os.chdir(original_dir)
+
 def push_everything_v1():
     setup_git()
     os.chdir(REPO_DIR)
@@ -92,6 +85,10 @@ def push_everything():
 def prep():
     setup_git()
     os.chdir(REPO_DIR)
+    result = subprocess.run(['git', 'remote'], capture_output=True, text=True)
+    remotes = result.stdout.strip().split('\n')
+    if 'origin' not in remotes:
+        subprocess.run(['git', 'remote', 'add', 'origin', REPO], check=True)
     subprocess.run(['git', 'fetch'], check=True)
     subprocess.run(['git', 'reset', '--hard', 'origin/main'], check=True)
     os.chdir(original_dir)
