@@ -89,6 +89,19 @@ def push_everything():
         pass
     subprocess.run(['git', 'push', 'origin', 'main'], check=True)
     os.chdir(original_dir)
+def prep():
+    setup_git()
+    os.chdir(REPO_DIR)
+    subprocess.run(['git', 'fetch'], check=True)
+    subprocess.run(['git', 'reset', '--hard', 'origin/main'], check=True)
+    os.chdir(original_dir)
+def later():
+    os.chdir(REPO_DIR)
+    subprocess.run(['git', 'add', '.'], check=True)
+    subprocess.run(['git', 'commit', '-m', 'Updated via script'], check=True)
+    subprocess.run(['git', 'push', 'origin', 'main'], check=True)
+    os.chdir(original_dir)
+prep()
 f=open('users.csv','r',newline='')
 k=csv.reader(f)
 u=[a[0] for a in k]
@@ -104,7 +117,7 @@ for a in u:
         f=open(f'./saved/%s/games.dat'%(a,),'wb')
         f.close()
 if c:
-    push_everything()
+    later()
 
 class User(UserMixin):
     def __init__(self, id,pwd):
@@ -207,6 +220,7 @@ def create():
         return render_template('create.html',u=u)
     elif request.method=='POST':
         #return 'done'
+        prep()
         user=request.form['user']
         pwd=request.form['pwd']
         f=open('users.csv','a',newline='')
@@ -219,7 +233,7 @@ def create():
             pass
         f=open(f'./saved/%s/games.dat'%(user,),'wb')
         f.close()
-        push_everything()
+        later()
         login_user(User(user,pwd))
         return redirect(f'/home/%s'%(user,))
 
@@ -332,6 +346,7 @@ def save(id,game):
     if request.method=='GET':
         return render_template('save.html',msg='Save As',game=game,id=id)
     else:
+        prep()
         try:
             f=open(f'./saved/%s/games.dat'%(id,),'rb')
             k=pickle.load(f) 
@@ -345,7 +360,7 @@ def save(id,game):
         f=open(f'./saved/%s/games.dat'%(id,),'wb')
         pickle.dump(k,f)
         f.close()
-        push_everything()
+        later()
         return redirect(f'/home/{id}')
 
 @app.route('/saved/<id>',methods=['GET','POST'])
