@@ -94,8 +94,13 @@ def prep():
     os.chdir(original_dir)
 def later():
     os.chdir(REPO_DIR)
+    subprocess.run(['git', 'checkout', 'main'], check=True)
     subprocess.run(['git', 'add', '.'], check=True)
-    subprocess.run(['git', 'commit', '-m', 'Updated via script'], check=True)
+    try:
+        subprocess.run(['git', 'commit', '-m', 'Update user data render'], check=True)
+    except subprocess.CalledProcessError:
+        # No changes to commit
+        pass
     subprocess.run(['git', 'push', 'origin', 'main'], check=True)
     os.chdir(original_dir)
 prep()
