@@ -18,7 +18,8 @@ GIT_USER = os.environ['GIT_USER']
 GIT_EMAIL = os.environ['GIT_EMAIL']
 GIT_TOKEN = os.environ['GIT_TOKEN']
 REPO = f'https://{GIT_USER}:{GIT_TOKEN}@github.com/{GIT_USER}/3d_v2.git'
-REPO_DIR = os.environ.get('REPO_DIR',os.getcwd())#'/opt/render/project/src'  # default Render working directory
+REPO_DIR = os.environ.get('REPO_DIR',os.getcwd())#'/opt/render/project/src'  
+# default Render working directory
 
 def setup_git():
     subprocess.run(['git', 'config', '--global', 'user.email', GIT_EMAIL])
@@ -341,7 +342,8 @@ def gamefn(id,game):
     except Exception as e:
         if id==games[game][2]:
             print(e)
-            return render_template('gamenot.html',game=game,board=games[game][1],id1=id,p=games[game][0])
+            return render_template('gamenot.html',game=game,board=games[game][1],id1=id,\
+                                   p=games[game][0])
         return render_template('game.html',game=game,board=games[game][1],id1=id,p=games[game][0])
 
 @app.route('/delete/<id>/<game>',methods=['GET','POST'])
@@ -373,8 +375,16 @@ def save(id,game):
             k={}
         for a in k:
             if a==request.form['game']:
-                return render_template('save.html',msg='Already exists. Enter a different name',game=game,id=id)
-        k[request.form['game']]=games[game]
+                return render_template('save.html',msg='Already exists. Enter a different name'\
+                                       ,game=game,id=id)
+        game1=request.form['game']
+        for a in game1:
+            if a.isalpha() or a.isdigit():
+                pass
+            else:
+                return render_template('save.html',game=game,id=id,\
+                                       msg='No special characters. Save as')
+        k[game1]=games[game]
         f=open(f'./saved/%s/games.dat'%(id,),'wb')
         pickle.dump(k,f)
         f.close()
