@@ -229,7 +229,7 @@ def create():
         k=csv.reader(f)
         u=[a for a in k]
         f.close()
-        if user in [u[0] for a in u]:
+        if user in [a[0] for a in u]:
             return render_template('create.html',u=u)
         for a in user:
             if a.isalpha() or a.isdigit():
