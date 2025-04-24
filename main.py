@@ -225,6 +225,13 @@ def create():
         prep()
         user=request.form['user']
         pwd=request.form['pwd']
+        if user in [u[0] for a in u]:
+            return render_template('create.html',u=u)
+        for a in user:
+            if a.isalpha() or a.isdigit():
+                pass
+            else:
+                return render_template('create.html',u=u)
         f=open('users.csv','a',newline='')
         k=csv.writer(f)
         k.writerow([user,pwd])
@@ -268,6 +275,11 @@ def new(id):
         return render_template('new.html',msg='Create a new game',id=id)
     else:
         game=request.form['game']
+        for a in game:
+            if a.isalpha() or a.isdigit():
+                pass
+            else:
+                return render_template('new.html',id=id,msg='No special characters')
         if game in games:
             return render_template('new.html',msg='Already exists. Give a different name',id=id)
         games[game]=[{id:'X'},createlist(),id,0]

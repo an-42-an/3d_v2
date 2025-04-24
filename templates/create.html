@@ -11,8 +11,11 @@ function validateForm() {
             alert("User already exists");
             return false;
         } 
-        else {alert("Created Successfully"); return true;}
-}
+        const regex = /^[a-zA-Z0-9]*$/;
+        let validinp=regex.test(user);
+        if (!validinp) {alert("No special characters");
+        return false;}
+        alert("Created Successfully"); return true;}
 </script>
 </head>
 <body>
@@ -24,7 +27,7 @@ function validateForm() {
     </div>
     <div>
     <label>Password</label>
-    <input type="text" name="pwd" required />
+    <input type="password" name="pwd" required />
     </div>
     <br>
     <div>

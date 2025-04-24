@@ -2,10 +2,18 @@
 <html>
 <head>
 <title> LOGIN </title>
+<script>
+    function validateForm() {
+        let user = document.forms["newgame"]["game"].value;
+        const regex = /^[a-zA-Z0-9]*$/;
+            let validinp=regex.test(user);
+            if (!validinp) {alert("No special characters");
+            return false;}return true;}
+        </script>
 </head>
 <body>
 <h1> {{msg}} </h1>
-<form action="/save/{{id}}/{{game}}" method="POST" name="newgame" >
+<form action="/save/{{id}}/{{game}}" method="POST" name="newgame" onsubmit="return validateForm()">
     <div>
     <label>Game name:</label>
     <input type="text" name="game" required />
