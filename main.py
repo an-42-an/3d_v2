@@ -225,6 +225,10 @@ def create():
         prep()
         user=request.form['user']
         pwd=request.form['pwd']
+        f=open('users.csv','r',newline='')
+        k=csv.reader(f)
+        u=[a for a in k]
+        f.close()
         if user in [u[0] for a in u]:
             return render_template('create.html',u=u)
         for a in user:
