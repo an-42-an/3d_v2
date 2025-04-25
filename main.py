@@ -134,7 +134,7 @@ def createlist():
 
 def dfs(surf,row,cell,game,d):
     print(d)
-    print(surf,row,cell)
+    #print(surf,row,cell)
     p=games[game][1][surf][row][cell]    
     for a in range(4):
         try:
@@ -325,6 +325,8 @@ def gamefn(id,game):
     try:
         move = request.args['move'] 
         surf, row, cell = map(int, move.split(','))
+        if games[game][1][surf][row][cell]!='':
+            return redirect(f'/join/{id}/{game}')
         games[game][1][surf][row][cell]=games[game][0][id]
         try:
             games[game][1][surf+1][row][cell]=''
