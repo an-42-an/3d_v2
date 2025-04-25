@@ -210,7 +210,7 @@ def login():
         for saved_user, saved_hash in u:
             if user == saved_user:
                 try:
-                    if argon2.verify(pwd, saved_hash):
+                    if argon2.verify(saved_hash,pwd):
                         login_user(User(user, saved_hash))
                         return redirect(f'/home/{user}')
                 except:
