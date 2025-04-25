@@ -4,7 +4,8 @@ from flask_login import LoginManager, UserMixin, login_required, login_user,\
 import csv
 import os
 import pickle
-import argon2
+from argon2 import PasswordHasher, exceptions
+argon2 = PasswordHasher()
 app=Flask(__name__)
 app.secret_key = "any key"
 login_manager = LoginManager()
@@ -232,7 +233,7 @@ def create():
         prep()
         user=request.form['user']
         pwd=request.form['pwd']
-        hashpwd=argon2.hash_password(pwd.encode('utf-8'))
+        hashpwd = argon2.hash(pwd)
         f=open('users.csv','r',newline='',encoding='utf-8')
         k=csv.reader(f)
         u=[a for a in k]
