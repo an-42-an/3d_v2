@@ -206,7 +206,7 @@ def login():
         f.close()
         user=request.form.get('user')
         pwd=request.form.get('pwd')
-        hashpwd=argon2.hash_password(pwd)
+        hashpwd=argon2.hash_password(pwd.encode('utf-8'))
         if [user,hashpwd] in u:
             login_user(User(user,hashpwd))
             return redirect(f'/home/%s'%(user,))
@@ -228,7 +228,7 @@ def create():
         prep()
         user=request.form['user']
         pwd=request.form['pwd']
-        hashpwd=argon2.hash_password(pwd)
+        hashpwd=argon2.hash_password(pwd.encode('utf-8'))
         f=open('users.csv','r',newline='',encoding='utf-8')
         k=csv.reader(f)
         u=[a for a in k]
