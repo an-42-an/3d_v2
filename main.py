@@ -327,6 +327,8 @@ def gamefn(id,game):
         surf, row, cell = map(int, move.split(','))
         if games[game][1][surf][row][cell]!='':
             return redirect(f'/join/{id}/{game}')
+        if id==games[game][2]:
+            return redirect(f'/join/{id}/{game}')
         games[game][1][surf][row][cell]=games[game][0][id]
         try:
             games[game][1][surf+1][row][cell]=''
@@ -334,7 +336,7 @@ def gamefn(id,game):
             pass
         if row>0 and surf==0:
             games[game][1][surf][row-1][cell]=''
-        games[game][2]=request.args.get('user')
+        games[game][2]=id #request.args.get('user')
         print(surf,row,cell)
         ns,nr,nc,d=checkwin(surf,row,cell,game)
         if ns or nr or nc:
