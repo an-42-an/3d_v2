@@ -206,12 +206,16 @@ def login():
         f.close()
         user=request.form.get('user')
         pwd=request.form.get('pwd')
-        hashpwd=argon2.hash_password(pwd.encode('utf-8'))
-        if [user,hashpwd] in u:
-            login_user(User(user,hashpwd))
-            return redirect(f'/home/%s'%(user,))
-        else:
-            return render_template('login.html',msg="Invalid credentials. Enter correct details")
+        for saved_user, saved_hash in u:
+            if user == saved_user:
+                try:
+                    if argon2.verify(pwd, saved_hash):
+                        login_user(User(user, saved_hash))
+                        return redirect(f'/home/{user}')
+                except:
+                    pass
+
+        return render_template('login.html', msg="Invalid credentials. Enter correct details")
 
 
 @app.route('/create',methods=['GET','POST'])
