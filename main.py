@@ -4,6 +4,7 @@ from flask_login import LoginManager, UserMixin, login_required, login_user,\
 import csv
 import os
 import pickle
+import argon2
 app=Flask(__name__)
 app.secret_key = "any key"
 login_manager = LoginManager()
@@ -199,14 +200,15 @@ def login():
         print(u)'''
         return render_template('login.html',msg="Enter your login credentials")
     else:
-        f=open('users.csv','r',newline='')
+        f=open('users.csv','r',newline='',encoding='utf-8')
         k=csv.reader(f)
         u=[a for a in k]
         f.close()
         user=request.form.get('user')
         pwd=request.form.get('pwd')
-        if [user,pwd] in u:
-            login_user(User(user,pwd))
+        hashpwd=argon2.hash_password(pwd)
+        if [user,hashpwd] in u:
+            login_user(User(user,hashpwd))
             return redirect(f'/home/%s'%(user,))
         else:
             return render_template('login.html',msg="Invalid credentials. Enter correct details")
@@ -215,7 +217,7 @@ def login():
 @app.route('/create',methods=['GET','POST'])
 def create():
     if request.method=='GET':
-        f=open('users.csv','r',newline='')
+        f=open('users.csv','r',newline='',encoding='utf-8')
         k=csv.reader(f)
         u=[a for a in k]
         f.close()
@@ -226,7 +228,8 @@ def create():
         prep()
         user=request.form['user']
         pwd=request.form['pwd']
-        f=open('users.csv','r',newline='')
+        hashpwd=argon2.hash_password(pwd)
+        f=open('users.csv','r',newline='',encoding='utf-8')
         k=csv.reader(f)
         u=[a for a in k]
         f.close()
@@ -237,9 +240,9 @@ def create():
                 pass
             else:
                 return render_template('create.html',u=u)
-        f=open('users.csv','a',newline='')
+        f=open('users.csv','a',newline='',encoding='utf-8')
         k=csv.writer(f)
-        k.writerow([user,pwd])
+        k.writerow([user,hashpwd])
         f.close()
         try:
             os.mkdir(f'./saved/%s'%(user,))
@@ -248,7 +251,7 @@ def create():
         f=open(f'./saved/%s/games.dat'%(user,),'wb')
         f.close()
         later()
-        login_user(User(user,pwd))
+        login_user(User(user,hashpwd))
         return redirect(f'/home/%s'%(user,))
 
 @login_manager.user_loader
@@ -300,11 +303,15 @@ def join(id):
     if request.method=='GET':
         g=[]
         for game in games:
-            if len(games[game][0])<2:
+            if id in games[game][0]:
+                g.append(game)
+            elif len(games[game][0])<2:
                 g.append(game)
         return render_template('games.html',g=g,id=id)
     else:
         game=request.form['game']
+        if id in games[game][0]:
+            return redirect(f'/join/%s/%s'%(id,game))
         if len(games[game][0])<2:
             games[game][0][id]='O'
             return redirect(f'/join/%s/%s'%(id,game))
