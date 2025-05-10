@@ -16,7 +16,7 @@
 <body>
     <div style="  position: absolute;  left:0%;  top:0%;  width:100.0%;  height:100.0%; background-color:black;"></div> 
 
-<img src="static/home_2.png"  style="  position: absolute;  left:36.72%;  top:17.06%;  width:36.01%;  height:64.61%; transform: rotate(45deg); transform-origin: center;">
+<img src="{{ url_for('static', filename='home_2.png') }}"  style="  position: absolute;  left:36.72%;  top:17.06%;  width:36.01%;  height:64.61%; transform: rotate(45deg); transform-origin: center;">
 
 <button onclick="window.location.href='/new/{{id}}';"  style="  position: absolute;  left:29.69%;  top:12.70%;  width:15.30%;  font-size: 1.5vw;  height:7.629%; background-color:#ea1d0f; color:black;">Create New Game</button> 
 <button onclick="window.location.href='/join/{{id}}';"  style="  position: absolute;  left:64.45%;  top:12.16%;  width:15.929%;  font-size: 1.3vw;  height:8.169%; background-color:#20bbd3; color:black;">Join Existing Game</button> 
