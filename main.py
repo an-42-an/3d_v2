@@ -199,7 +199,7 @@ def login():
         u=[a for a in k]
         f.close()
         print(u)'''
-        return render_template('login_v2.html',msg="LOGIN")
+        return render_template('login.html',msg="LOGIN")
     else:
         f=open('users.csv','r',newline='',encoding='utf-8')
         k=csv.reader(f)
@@ -213,10 +213,10 @@ def login():
                     if argon2.verify(saved_hash,pwd):
                         login_user(User(user, saved_hash))
                         return redirect(f'/home/{user}')
-                except:
+                except Exception as e:
                     print(f"Error verifying password: {e}")
 
-        return render_template('login_v2.html', msg="Invalid credentials. Enter correct details")
+        return render_template('login.html', msg="Invalid credentials. Enter correct details")
 
 
 @app.route('/create',methods=['GET','POST'])
