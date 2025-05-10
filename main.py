@@ -244,7 +244,7 @@ def create():
             if a.isalpha() or a.isdigit():
                 pass
             else:
-                return render_template('create.html',u=u)
+                return render_template('create_v2.html',u=u)
         f=open('users.csv','a',newline='',encoding='utf-8')
         k=csv.writer(f)
         k.writerow([user,hashpwd])
@@ -278,7 +278,7 @@ def logout():
 def home(id):
     if current_user.id != id:
         return redirect('/')
-    return render_template('home.html',id=id)
+    return render_template('home_v2.html',id=id)
 @app.route('/new/<id>',methods=['GET','POST'])
 @login_required
 def new(id):
