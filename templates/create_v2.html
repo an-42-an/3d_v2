@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+    }
+    input, label {
+    text-shadow: 0 0 5px #20bbd3;
+    }
+    input {
+    box-shadow: 0 0 5px #20bbd3;
+    }
+    </style>
+    <title >CREATE ACCOUNT</title> 
+    <script>
+function validateForm() {
+    const u = {{ u | tojson }};
+        let user = document.forms["createform"]["user"].value;
+        let valid = u.some(pair => pair[0] === user );
+        if (valid) {
+            alert("User already exists");
+            return false;
+        } 
+        const regex = /^[a-zA-Z0-9]*$/;
+        let validinp=regex.test(user);
+        if (!validinp) {alert("No special characters");
+        return false;}
+        alert("Created Successfully"); return true;}
+</script>
+    </head>
+<body>
+    <div style="  position: absolute;  left:0%;  top:0%;  width:100.0%;  height:100.0%; background-color:black;"></div> 
+
+
+<img src="static/login_bk_1.jpg"  style="  position: absolute;  left:0%;  top:0%;  width:60.0%;  height:100.0%; ">
+<h1  style="  position: absolute;  left:64.53%;  top:8.89%;  width:21.25%;  font-size: 4.25vw;  height:24.32%; color:#20bbd3">3D XO</h1> 
+<h4  style="  position: absolute;  left:60.08%;  top:34.12%;  width:30%;  font-size: 1.359vw;  height:4.170%; color:#20bbd3">
+    CREATE ACCOUNT</h4> 
+<form action="/create" method="POST" name="createform" onsubmit="return validateForm()">
+<label  style="  position: absolute;  left:60%;  top:45%;  width:5.0%;  font-size: 1vw;  height:2.0%; color:#20bbd3">Username</label> 
+
+<input type="text" required  style="  position: absolute;  left:65%;  top:45%;  width:8.0%;  height:2.0%; ">
+<label  style="  position: absolute;  left:60.00%;  top:51.00%; color:#20bbd3; font-size: 1vw">Password</label> 
+<input type="password" required style="  position: absolute;  left:65%;  top:50%;  width:8.0%;  height:2.0%; ">
+<button type="submit" style="position: absolute; left:65%; top:55%; width:6.0%; height:4.0%; background-color:#20bbd3; color:black;">submit</button>
+</form  >
