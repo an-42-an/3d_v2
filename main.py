@@ -214,7 +214,7 @@ def login():
                         login_user(User(user, saved_hash))
                         return redirect(f'/home/{user}')
                 except:
-                    pass
+                    print(f"Error verifying password: {e}")
 
         return render_template('login_v2.html', msg="Invalid credentials. Enter correct details")
 
