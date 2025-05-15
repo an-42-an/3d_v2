@@ -27,7 +27,7 @@ function validateForm() {
 <body>
     <div style="  position: absolute;  left:0%;  top:0%;  width:100.0%;  height:100.0%; background-color:black;"></div> 
 
-<img src="static/new_1.jpg" style="  position: absolute;  left:43.59%;  top:14.36%;  width:48.91%;  height:76.75%; ">
+<img src="{{ url_for('static', filename='new_1.jpg') }}" style="  position: absolute;  left:43.59%;  top:14.36%;  width:48.91%;  height:76.75%; ">
 <div  style="  position: absolute;  left:87.42%;  top:11.62%;  width:6.719%;  height:11.45%; background-color:black;"></div> 
 <h1  style="  position: absolute;  left:10.78%;  top:20.34%;  width:21.79%;  font-size: 3.114vw;  height:7.52%; color:#20bbd3 ">{{msg}}</h1> 
 <form action="/new/{{id}}" method="POST" name="newgame" onsubmit="return validateForm()" >
