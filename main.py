@@ -285,7 +285,7 @@ def new(id):
     if current_user.id != id:
         return redirect('/')
     if request.method=='GET':
-        return render_template('new.html',msg='Create a new game',id=id)
+        return render_template('new_v2.html',msg='Create a new game',id=id)
     else:
         game=request.form['game']
         for a in game:

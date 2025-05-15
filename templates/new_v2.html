@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+    }
+    
+    input {
+    box-shadow: 0 0 5px #20bbd3;
+    }
+    </style>
+<title> LOGIN </title>
+<script>
+function validateForm() {
+    let user = document.forms["newgame"]["game"].value;
+    const regex = /^[a-zA-Z0-9]*$/;
+        let validinp=regex.test(user);
+        if (!validinp) {alert("No special characters");
+        return false;}return true;}
+    </script>
+</head>
+<body>
+    <div style="  position: absolute;  left:0%;  top:0%;  width:100.0%;  height:100.0%; background-color:black;"></div> 
+
+<img src="static/new_1.jpg" style="  position: absolute;  left:43.59%;  top:14.36%;  width:48.91%;  height:76.75%; ">
+<div  style="  position: absolute;  left:87.42%;  top:11.62%;  width:6.719%;  height:11.45%; background-color:black;"></div> 
+<h1  style="  position: absolute;  left:10.78%;  top:20.34%;  width:21.79%;  font-size: 3.114vw;  height:7.52%; color:#20bbd3 ">{{msg}}</h1> 
+<form action="/new/{{id}}" method="POST" name="newgame" onsubmit="return validateForm()" >
+<label  style="  position: absolute;  left:8%;  top:44%;  width:40%;  font-size: 1.582vw;  height:5%; color:#20bbd3">Game name: </label> 
+<input type="text" name="game" required   style="  position: absolute;  left:17.97%;  top:44.27%;  width:9.760%;  height:2.570%; "></input> 
+<input type="submit" style="  position: absolute;  left:12.27%;  top:56.92%;  width:7.109%;  font-size: 1.184vw;  height:3.739%; ">Submit</input> 
+</form>
