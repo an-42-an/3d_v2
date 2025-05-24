@@ -14,36 +14,7 @@
     box-shadow: 0 0 5px #20bbd3;
     }
     </style>
-    <script>
-      let aspectRatios = new Map();
-        document.addEventListener("DOMContentLoaded", function () {
-        const elements = document.querySelectorAll(".a1");
-        let aspr = window.innerWidth / window.innerHeight;
-        elements.forEach(el => {
-            const computed = window.getBoundingClientRect(el);
-            const widthPercent = (computed.width) / window.innerWidth * 100;
-            const heightPercent = (computed.height) / window.innerHeight * 100;
-            const ratio = widthPercent / heightPercent;
-            aspectRatios.set(el, ratio);
-        });
-
-        function updateAspectRatios() {
-            elements.forEach(el => {
-                var aspectRatio = window.innerWidth / window.innerHeight;
-                const computed = window.getBoundingClientRect(el);
-                const widthPercent = (computed.width) / window.innerWidth * 100;
-                const ratio = aspectRatios.get(el);
-                const newHeight = widthPercent*aspectRatio / (ratio*aspr);
-                el.style.height = `${newHeight}%`;
-                console.log(newHeight,ratio)
-                //aspr=aspectRatio
-            });
-        }
-
-        window.addEventListener("resize", updateAspectRatios);
-        updateAspectRatios();
-    });
-    </script>
+    
     <title >LOGIN</title> 
     </head>
 <body>
@@ -51,18 +22,18 @@
 <div style="  position: absolute;  left:0%;  top:0%;  width:100.0%;  height:100.0%; background-color:black;"></div> 
 
 
-<img class="a1" src="static/login_bk_1.jpg"  style="  position: absolute;  left:0%;  top:0%;  width:60.0%;  height:100.0%; ">
-<h1  class="a1" style="  position: absolute;  left:64.53%;  top:8.89%;  width:21.25%;  font-size: 4.25vw;  height:24.32%; color:#20bbd3">3D XO</h1> 
-<h4  class="a1" style="  position: absolute;  left:60.08%;  top:34.12%;  width:30%;  font-size: 1.359vw;  height:4.170%; color:#20bbd3">{{msg}}</h4> 
+<img src="static/login_bk_1.jpg"  style="  position: absolute;  left:0%;  top:0%;  width:60.0%;  height:100.0%; ">
+<h1  style="  position: absolute;  left:64.53%;  top:8.89%;  width:21.25%;  font-size: 4.25vw;  height:24.32%; color:#20bbd3">3D XO</h1> 
+<h4  style="  position: absolute;  left:60.08%;  top:34.12%;  width:30%;  font-size: 1.359vw;  height:4.170%; color:#20bbd3">{{msg}}</h4> 
 <form action="/" method="POST" name="loginform" >
 
-<label  class="a1" style="  position: absolute;  left:60%;  top:45%;  width:5.0%;  font-size: 1vw;  height:2.0%; color:#20bbd3" >Username</label> 
+<label  style="  position: absolute;  left:60%;  top:45%;  width:5.0%;  font-size: 1vw;  height:2.0%; color:#20bbd3" >Username</label> 
 
-<input class="a1" type="text" required  style="  position: absolute;  left:65%;  top:45%;  width:8.0%;  height:2.0%; " name="user">
-<label  class="a1" style="  position: absolute;  left:60.00%;  top:51.00%; color:#20bbd3; font-size: 1vw" >Password</label> 
-<input class="a1" type="password" required style="  position: absolute;  left:65%;  top:50%;  width:8.0%;  height:2.0%; " name="pwd">
+<input type="text" required  style="  position: absolute;  left:65%;  top:45%;  width:8.0%;  height:2.0%; " name="user">
+<label  style="  position: absolute;  left:60.00%;  top:51.00%; color:#20bbd3; font-size: 1vw" >Password</label> 
+<input type="password" required style="  position: absolute;  left:65%;  top:50%;  width:8.0%;  height:2.0%; " name="pwd">
 <br>
-<button class="a1" type="submit" style="position: absolute; left:65%; top:55%; width:6.0%; height:4.0%; background-color:#20bbd3; color:black; font-size: 1vw">submit</button>
+<button type="submit" style="position: absolute; left:65%; top:55%; width:6.0%; height:4.0%; background-color:#20bbd3; color:black; font-size: 1vw">submit</button>
 
 </form >
-<a class="a1" href="/create" style="color:#20bbd3; position: relative; top: 65%; left: 65%;">Or create new account</a>
+<a href="/create" style="color:#20bbd3; position: relative; top: 65%; left: 65%;">Or create new account</a>
