@@ -20,9 +20,9 @@
         const elements = document.querySelectorAll(".a1");
         let aspr = window.innerWidth / window.innerHeight;
         elements.forEach(el => {
-            const computed = window.getComputedStyle(el);
-            const widthPercent = parseFloat(computed.width) / window.innerWidth * 100;
-            const heightPercent = parseFloat(computed.height) / window.innerHeight * 100;
+            const computed = window.getBoundingClientRect(el);
+            const widthPercent = (computed.width) / window.innerWidth * 100;
+            const heightPercent = (computed.height) / window.innerHeight * 100;
             const ratio = widthPercent / heightPercent;
             aspectRatios.set(el, ratio);
         });
@@ -30,8 +30,8 @@
         function updateAspectRatios() {
             elements.forEach(el => {
                 var aspectRatio = window.innerWidth / window.innerHeight;
-                const computed = window.getComputedStyle(el);
-                const widthPercent = parseFloat(computed.width) / window.innerWidth * 100;
+                const computed = window.getBoundingClientRect(el);
+                const widthPercent = (computed.width) / window.innerWidth * 100;
                 const ratio = aspectRatios.get(el);
                 const newHeight = widthPercent*aspectRatio / (ratio*aspr);
                 el.style.height = `${newHeight}%`;
