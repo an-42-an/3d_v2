@@ -14,6 +14,36 @@
     box-shadow: 0 0 5px #20bbd3;
     }
     </style>
+    <script>
+      let aspectRatios = new Map();
+        document.addEventListener("DOMContentLoaded", function () {
+        const elements = document.querySelectorAll(".a1");
+
+        elements.forEach(el => {
+            const computed = window.getComputedStyle(el);
+            const widthPercent = parseFloat(computed.width) / window.innerWidth * 100;
+            const heightPercent = parseFloat(computed.height) / window.innerHeight * 100;
+            const ratio = widthPercent / heightPercent;
+            aspectRatios.set(el, ratio);
+        });
+
+        function updateAspectRatios() {
+            elements.forEach(el => {
+                var aspectRatio = window.innerWidth / window.innerHeight;
+                const computed = window.getComputedStyle(el);
+                const widthPercent = parseFloat(computed.width) / window.innerWidth * 100;
+                const ratio = aspectRatios.get(el);
+                const newHeight = widthPercent*aspectRatio / (ratio);
+                el.style.height = `${newHeight}%`;
+                console.log(newHeight,ratio)
+                //aspr=aspectRatio
+            });
+        }
+
+        window.addEventListener("resize", updateAspectRatios);
+        updateAspectRatios();
+    });
+    </script>
     <title >LOGIN</title> 
     </head>
 <body>
