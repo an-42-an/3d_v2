@@ -92,7 +92,13 @@ def prep():
     remotes = result.stdout.strip().split('\n')
     if 'origin' not in remotes:
         subprocess.run(['git', 'remote', 'add', 'origin', REPO], check=True)
-    subprocess.run(['git', 'fetch'], check=True)
+    try:
+        subprocess.run(['git', 'fetch'], check=True, capture_output=True, text=True)
+    except subprocess.CalledProcessError as e:
+        print("Git fetch failed.")
+        print("Return code:", e.returncode)
+        print("stdout:", e.stdout)
+        print("stderr:", e.stderr)
     subprocess.run(['git', 'reset', '--hard', 'origin/main'], check=True)
     os.chdir(original_dir)
 def later():
