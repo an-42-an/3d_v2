@@ -18,7 +18,7 @@
       let aspectRatios = new Map();
         document.addEventListener("DOMContentLoaded", function () {
         const elements = document.querySelectorAll(".a1");
-
+        let aspr = window.innerWidth / window.innerHeight;
         elements.forEach(el => {
             const computed = window.getComputedStyle(el);
             const widthPercent = parseFloat(computed.width) / window.innerWidth * 100;
@@ -33,7 +33,7 @@
                 const computed = window.getComputedStyle(el);
                 const widthPercent = parseFloat(computed.width) / window.innerWidth * 100;
                 const ratio = aspectRatios.get(el);
-                const newHeight = widthPercent*aspectRatio / (ratio);
+                const newHeight = widthPercent*aspectRatio / (ratio*aspr);
                 el.style.height = `${newHeight}%`;
                 console.log(newHeight,ratio)
                 //aspr=aspectRatio
