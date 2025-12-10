@@ -14,121 +14,72 @@ login_manager.login_view = "login"
 games={}
 deleted={}
 import os
-import subprocess
-original_dir = os.getcwd() 
-GIT_USER = os.environ['GIT_USER']
-GIT_EMAIL = os.environ['GIT_EMAIL']
-GIT_TOKEN = os.environ['GIT_TOKEN']
-REPO = f'https://{GIT_USER}:{GIT_TOKEN}@github.com/{GIT_USER}/3d_v2.git'
-REPO_DIR = os.environ.get('REPO_DIR',os.getcwd())#'/opt/render/project/src'  
-# default Render working directory
+import io
 
-def setup_git():
-    subprocess.run(['git', 'config', '--global', 'user.email', GIT_EMAIL])
-    subprocess.run(['git', 'config', '--global', 'user.name', GIT_USER])
+from dotenv import load_dotenv
 
-def push_all_data(commit_msg='Update user data'):
-    setup_git()
-    os.chdir(REPO_DIR)
+load_dotenv() 
 
-    # Stage users.csv
-    subprocess.run(['git', 'add', 'users.csv'])
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY=os.getenv("SUPABASE_KEY")
+#print(SUPABASE_URL,SUPABASE_KEY)
+from supabase import create_client
 
-    # Stage all .dat files inside ./saved/
-    for root, dirs, files in os.walk('saved'):
-        for file in files:
-            if file.endswith('.dat'):
-                full_path = os.path.join(root, file)
-                subprocess.run(['git', 'add', full_path])
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-    # Commit and push
-    subprocess.run(['git', 'commit', '-m', commit_msg])
-    subprocess.run(['git', 'push', REPO, 'main'], check=True)
-    os.chdir(original_dir)
+BUCKET = "game-data"
+SUPA_USERS = "users.csv"
 
-def push_everything_v1():
-    setup_git()
-    os.chdir(REPO_DIR)
-    result = subprocess.run(['git', 'remote'], capture_output=True, text=True)
-    remotes = result.stdout.strip().split('\n')
-    if 'origin' not in remotes:
-        subprocess.run(['git', 'remote', 'add', 'origin', REPO], check=True)
-    subprocess.run(['git', 'checkout', 'main'], check=True)
-    subprocess.run(['git', 'pull', 'origin', 'main', '--rebase'], check=True)
-    subprocess.run(['git', 'add', '.'], check=True)
-    subprocess.run(['git', 'commit', '-m', 'Update user data render'], check=True)
-    subprocess.run(['git', 'push', 'origin', 'main'], check=True)
-    os.chdir(original_dir)
-def push_everything():
-    setup_git()
-    os.chdir(REPO_DIR)
-    result = subprocess.run(['git', 'remote'], capture_output=True, text=True)
-    remotes = result.stdout.strip().split('\n')
-    if 'origin' not in remotes:
-        subprocess.run(['git', 'remote', 'add', 'origin', REPO], check=True)
+def SUPA_USER_FILE(user):
+    return f"saved/{user}/games.dat"
 
-    subprocess.run(['git', 'checkout', 'main'], check=True)
-    # Handle possible pull errors
+def load_users():
     try:
-        subprocess.run(['git', 'pull', 'origin', 'main', '--rebase'], check=True)
-    except subprocess.CalledProcessError:
-        # Abort rebase if stuck
-        subprocess.run(['git', 'rebase', '--abort'], check=False)
-        # Reset to origin/main (WARNING: This discards local changes!)
-        subprocess.run(['git', 'fetch', 'origin'], check=True)
-        subprocess.run(['git', 'push', 'origin', 'main', '--force'], check=True)
-    subprocess.run(['git', 'add', '.'], check=True)
+        res = supabase.storage.from_(BUCKET).download(SUPA_USERS)
+        text = res.decode("utf-8")
+        return list(csv.reader(io.StringIO(text)))
+    except Exception as e:
+        print(supabase.storage.from_(BUCKET).list(path=""))
+        return []
+    
+import requests
+
+def save_users(users):
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerows(users)
+    supabase.storage.from_(BUCKET).upload(
+        SUPA_USERS,
+        buf.getvalue(),
+        {"content-type": "text/csv"},
+        upsert=True
+    )
+
+def load_games(user):
     try:
-        subprocess.run(['git', 'commit', '-m', 'Update user data render'], check=True)
-    except subprocess.CalledProcessError:
-        # No changes to commit
-        pass
-    subprocess.run(['git', 'push', 'origin', 'main'], check=True)
-    os.chdir(original_dir)
-def prep():
-    setup_git()
-    os.chdir(REPO_DIR)
-    result = subprocess.run(['git', 'remote'], capture_output=True, text=True)
-    remotes = result.stdout.strip().split('\n')
-    if 'origin' not in remotes:
-        subprocess.run(['git', 'remote', 'add', 'origin', REPO], check=True)
-    try:
-        subprocess.run(['git', 'fetch'], check=True, capture_output=True, text=True)
-    except subprocess.CalledProcessError as e:
-        print("Git fetch failed.")
-        print("Return code:", e.returncode)
-        print("stdout:", e.stdout)
-        print("stderr:", e.stderr)
-    subprocess.run(['git', 'reset', '--hard', 'origin/main'], check=True)
-    os.chdir(original_dir)
-def later():
-    os.chdir(REPO_DIR)
-    subprocess.run(['git', 'checkout', 'main'], check=True)
-    subprocess.run(['git', 'add', '.'], check=True)
-    try:
-        subprocess.run(['git', 'commit', '-m', 'Update user data render'], check=True)
-    except subprocess.CalledProcessError:
-        # No changes to commit
-        pass
-    subprocess.run(['git', 'push', 'origin', 'main'], check=True)
-    os.chdir(original_dir)
-prep()
-f=open('users.csv','r',newline='')
-k=csv.reader(f)
-u=[a[0] for a in k]
-f.close()
-c=0
-for a in u:
-    try:
-        f=open(f'./saved/%s/games.dat'%(a,),'ab')
-        f.close()
+        res = supabase.storage.from_(BUCKET).download(SUPA_USER_FILE(user))
+        return pickle.loads(res)
     except:
-        c=1
-        os.mkdir(f'./saved/%s'%(a,))
-        f=open(f'./saved/%s/games.dat'%(a,),'wb')
-        f.close()
-if c:
-    later()
+        return {}
+
+def save_games(user, game_dict):
+    data = pickle.dumps(game_dict)
+
+    supabase.storage.from_(BUCKET).upload(
+        SUPA_USER_FILE(user),
+        data,
+        {"content-type": "application/octet-stream"},
+        upsert=True
+    )
+
+
+u=load_users()
+for user in u:
+    try:
+        games = load_games(user[0])
+    except:
+        save_games(user[0], {})
+
 
 class User(UserMixin):
     def __init__(self, id,pwd):
@@ -200,17 +151,10 @@ def winlist(ns,nr,nc,d):
 @app.route('/',methods=['GET','POST'])
 def login():
     if request.method=='GET':
-        '''f=open('users.csv','r',newline='')
-        k=csv.reader(f)
-        u=[a for a in k]
-        f.close()
-        print(u)'''
         return render_template('login_v2.html',msg="LOGIN")
     else:
-        f=open('users.csv','r',newline='',encoding='utf-8')
-        k=csv.reader(f)
-        u=[a for a in k]
-        f.close()
+        u=load_users()
+        print(u)
         user=request.form.get('user')
         pwd=request.form.get('pwd')
         for saved_user, saved_hash in u:
@@ -222,28 +166,20 @@ def login():
                 except Exception as e:
                     print(f"Error verifying password: {e}")
 
-        return render_template('login_v2.html', msg="Invalid credentials. Enter correct details")
+        return render_template('login_v3.html', msg="Invalid credentials. Enter correct details")
 
 
 @app.route('/create',methods=['GET','POST'])
 def create():
     if request.method=='GET':
-        f=open('users.csv','r',newline='',encoding='utf-8')
-        k=csv.reader(f)
-        u=[a for a in k]
-        f.close()
-        #print(u)
+        u=load_users()
         return render_template('create_v2.html',u=u)
+    
     elif request.method=='POST':
-        #return 'done'
-        prep()
         user=request.form['user']
         pwd=request.form['pwd']
         hashpwd = argon2.hash(pwd)
-        f=open('users.csv','r',newline='',encoding='utf-8')
-        k=csv.reader(f)
-        u=[a for a in k]
-        f.close()
+        u=load_users()
         if user in [a[0] for a in u]:
             return render_template('create.html',u=u)
         for a in user:
@@ -251,33 +187,25 @@ def create():
                 pass
             else:
                 return render_template('create_v2.html',u=u)
-        f=open('users.csv','a',newline='',encoding='utf-8')
-        k=csv.writer(f)
-        k.writerow([user,hashpwd])
-        f.close()
-        try:
-            os.mkdir(f'./saved/%s'%(user,))
-        except:
-            pass
-        f=open(f'./saved/%s/games.dat'%(user,),'wb')
-        f.close()
-        later()
+        u.append([user, hashpwd])
+        save_users(u)
+        save_games(user, {})
+
         login_user(User(user,hashpwd))
         return redirect(f'/home/%s'%(user,))
 
 @login_manager.user_loader
 def load_user(id):
-    with open('users.csv', 'r', newline='') as f:
-        k = csv.reader(f)
-        for row in k:
-            if row[0] == id:
-                return User(row[0], row[1])
+    users = load_users()
+    for u, hashed in users:
+        if u == id:
+            return User(u, hashed)
     return None
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
-    return Response('<p>Logged out</p>')
+    return redirect('/')
 
 @app.route('/home/<id>')
 @login_required
@@ -285,6 +213,7 @@ def home(id):
     if current_user.id != id:
         return redirect('/')
     return render_template('home_v2.html',id=id)
+
 @app.route('/new/<id>',methods=['GET','POST'])
 @login_required
 def new(id):
@@ -355,7 +284,7 @@ def gamefn(id,game):
         if row>0 and surf==0:
             games[game][1][surf][row-1][cell]=''
         games[game][2]=id #request.args.get('user')
-        print(surf,row,cell)
+        #print(surf,row,cell)
         ns,nr,nc,d=checkwin(surf,row,cell,game)
         if ns or nr or nc:
             l=winlist(ns,nr,nc,d)
@@ -388,11 +317,9 @@ def save(id,game):
     if request.method=='GET':
         return render_template('save.html',msg='Save As',game=game,id=id)
     else:
-        prep()
+        #prep()
         try:
-            f=open(f'./saved/%s/games.dat'%(id,),'rb')
-            k=pickle.load(f) 
-            f.close() 
+            k=load_games(id) 
         except:
             k={}
         for a in k:
@@ -407,10 +334,7 @@ def save(id,game):
                 return render_template('save.html',game=game,id=id,\
                                        msg='No special characters. Save as')
         k[game1]=games[game]
-        f=open(f'./saved/%s/games.dat'%(id,),'wb')
-        pickle.dump(k,f)
-        f.close()
-        later()
+        save_games(id,k)
         return redirect(f'/home/{id}')
 
 @app.route('/saved/<id>',methods=['GET','POST'])
@@ -418,32 +342,26 @@ def save(id,game):
 def saved(id):
     if current_user.id != id:
         return redirect('/')
-    f=open(f'./saved/%s/games.dat'%(id,),'ab+')
-    f.seek(0)
-    g=[]
-    try:
-        k=pickle.load(f)  
-    except:
-        k={}
-    for a in k:
-        g.append(a)
-    return render_template('saved.html',g=g,id=id)
+    games_dict = load_games(id)
+    game_list = list(games_dict.keys())
 
-@app.route('/saved/<id>/<game>',methods=['GET','POST'])
+    return render_template('saved.html', g=game_list, id=id)
+
+
+@app.route('/saved/<id>/<game>', methods=['GET', 'POST'])
 @login_required
-def savedgame(id,game):
+def savedgame(id, game):
     if current_user.id != id:
         return redirect('/')
-    f=open(f'./saved/%s/games.dat'%(id,),'ab+')
-    f.seek(0)
-    try:
-        k=pickle.load(f)  
-    except:
-        k={}
-    for a in k:
-        if a==game:
-            return render_template('show.html',game=game,board=k[game][1],\
-                                   l=k[game][3],id1=id,p=k[a][0])
+    games_dict = load_games(id)  
+
+    if game not in games_dict:
+        return redirect(f"/saved/{id}")
+
+    g = games_dict[game]   
+
+    return render_template( 'show.html',  game=game, board=g[1],l=g[3], id1=id, p=g[0])
+
             
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000,debug=True)
