@@ -166,7 +166,7 @@ def login():
                 except Exception as e:
                     print(f"Error verifying password: {e}")
 
-        return render_template('login_v3.html', msg="Invalid credentials. Enter correct details")
+        return render_template('login_v2.html', msg="Invalid credentials. Enter correct details")
 
 
 @app.route('/create',methods=['GET','POST'])
