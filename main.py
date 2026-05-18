@@ -42,17 +42,14 @@ def load_users():
         print(supabase.storage.from_(BUCKET).list(path=""))
         return []
     
-import requests
-
 def save_users(users):
     buf = io.StringIO()
     writer = csv.writer(buf)
     writer.writerows(users)
     supabase.storage.from_(BUCKET).upload(
         SUPA_USERS,
-        buf.getvalue(),
-        {"content-type": "text/csv"},
-        upsert=True
+        buf.getvalue().encode(),
+        file_options={"content-type": "text/csv","upsert":"true"}
     )
 
 def load_games(user):
@@ -66,10 +63,12 @@ def save_games(user, game_dict):
     data = pickle.dumps(game_dict)
 
     supabase.storage.from_(BUCKET).upload(
-        SUPA_USER_FILE(user),
-        data,
-        {"content-type": "application/octet-stream"},
-        upsert=True
+        path=SUPA_USER_FILE(user),
+        file=data,
+        file_options={
+            "content-type": "application/octet-stream",
+            "upsert": "true"
+        }
     )
 
 
