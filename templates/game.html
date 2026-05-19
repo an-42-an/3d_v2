@@ -40,9 +40,17 @@
     #green {background-color:lightgreen}
     
 </style>
+<script type="module">
+
+import * as THREE from "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.180.0/three.module.min.js";
+
+window.THREE = THREE;
+
+</script>
+
 </head>
 <body>
-<div class="row">
+<div class="row" id="board2d">
     
         {% for surf_index in range(board|length) %}
           <div class="column"> 
@@ -68,6 +76,8 @@
         {% endfor %}
         
 </div>
+<div id="board3d" style="width:100%; height:600px; display:none;"></div>
+
 <form method="GET" action="/join/{{id1}}/{{game}}" id="moveform">
     <input type="hidden" name="move" id="moveInput">
     <input type="hidden" name="user" value="{{id1}}">
@@ -85,8 +95,169 @@
           // Store coordinates
           document.getElementById('moveInput').value = cell.dataset.coords;
         }
-        </script>
+        let is3D = false;
+        function toggle3D() {
+            is3D = !is3D;
+
+            document.getElementById("board2d").style.display =
+                is3D ? "none" : "flex";
+
+            document.getElementById("board3d").style.display =
+                is3D ? "block" : "none";
+
+            if (is3D && !window.sceneBuilt) {
+                build3D();
+                window.sceneBuilt = true;
+            }
+        }
+
+        function build3D() {
+
+            const boardData = {{ board|tojson }};
+
+            const scene = new THREE.Scene();
+
+            const camera = new THREE.PerspectiveCamera(
+                75,
+                window.innerWidth / 600,
+                0.1,
+                1000
+            );
+
+            const renderer = new THREE.WebGLRenderer({
+                antialias: true,
+                alpha: true
+            });
+
+            renderer.setSize(window.innerWidth-100, 500);
+
+            document.getElementById("board3d")
+                .appendChild(renderer.domElement);
+
+            const light = new THREE.PointLight(0xffffff, 2);
+
+            light.position.set(10, 10, 10);
+
+            scene.add(light);
+
+            const ambient = new THREE.AmbientLight(0xffffff, 1);
+
+            scene.add(ambient);
+
+            const spacing = 1.2;
+
+            const sizeX = boardData[0][0].length;
+            const sizeY = boardData[0].length;
+            const sizeZ = boardData.length;
+
+            const offsetX = (sizeX - 1) * spacing / 2;
+            const offsetY = (sizeY - 1) * spacing / 2;
+            const offsetZ = (sizeZ - 1) * spacing / 2;
+
+            for (let z = 0; z < sizeZ; z++) {
+
+    for (let y = 0; y < sizeY; y++) {
+
+        for (let x = 0; x < sizeX; x++) {
+
+            const cell = boardData[z][y][x];
+
+            const geometry =
+                new THREE.BoxGeometry(1,1,1);
+
+            const material =
+                new THREE.MeshPhongMaterial({
+                    color: 0xffffff,
+                    transparent: true,
+                    opacity: 0.05,
+                    side: THREE.DoubleSide
+                });
+
+            const cube =
+                new THREE.Mesh(
+                    geometry,
+                    material
+                );
+
+            cube.position.set(
+                x * spacing - offsetX,
+                z * spacing - offsetZ,
+                y * spacing - offsetY
+            );
+
+            scene.add(cube);
+if (cell) {
+
+    const canvas =
+        document.createElement("canvas");
+
+    canvas.width = 128;
+    canvas.height = 128;
+
+    const ctx =
+        canvas.getContext("2d");
+
+    ctx.clearRect(0, 0, 128, 128);
+
+    ctx.fillStyle = "black";
+
+    ctx.font = "100px Arial";
+
+    ctx.textAlign = "center";
+
+    ctx.textBaseline = "middle";
+
+    ctx.fillText(cell, 64, 64);
+
+    const texture =
+        new THREE.CanvasTexture(canvas);
+
+    const spriteMaterial =
+        new THREE.SpriteMaterial({
+            map: texture,
+            transparent: true,
+            depthTest: false
+        });
+
+    const sprite =
+        new THREE.Sprite(spriteMaterial);
+
+    sprite.scale.set(0.5, 0.5, 0.5);
+
+    sprite.position.copy(cube.position);
+
+    sprite.position.z += 0.01;
+
+    scene.add(sprite);
+}
+        }
+    }
+}
+
+const radius = 10;
+
+function animate() {
+
+    requestAnimationFrame(animate);
+
+    const t = Date.now() * 0.0003;
+
+    camera.position.x = Math.sin(t) * radius;
+    camera.position.z = Math.cos(t) * radius;
+    camera.position.y = 4;
+
+    camera.lookAt(0, 0, 0);
+
+    renderer.render(scene, camera);
+}
+
+            animate();
+        }
+
+</script>
 </body>
+<br>
+<button onclick="toggle3D()">Switch to 3D View</button>
 <br>
 <ul>
     {% for k,v in p.items() %}

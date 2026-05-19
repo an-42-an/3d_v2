@@ -55,6 +55,7 @@ def save_users(users):
 def load_games(user):
     try:
         res = supabase.storage.from_(BUCKET).download(SUPA_USER_FILE(user))
+        print(user,pickle.loads(res))
         return pickle.loads(res)
     except:
         return {}
@@ -75,7 +76,7 @@ def save_games(user, game_dict):
 u=load_users()
 for user in u:
     try:
-        games = load_games(user[0])
+        gamegal = load_games(user[0])
     except:
         save_games(user[0], {})
 
@@ -237,6 +238,7 @@ def new(id):
 @app.route('/join/<id>',methods=['GET','POST'])
 @login_required
 def join(id):
+    print(games)
     if current_user.id != id:
         return redirect('/')
     if request.method=='GET':
