@@ -55,7 +55,6 @@ def save_users(users):
 def load_games(user):
     try:
         res = supabase.storage.from_(BUCKET).download(SUPA_USER_FILE(user))
-        print(user,pickle.loads(res))
         return pickle.loads(res)
     except:
         return {}
