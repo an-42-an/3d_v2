@@ -10,3 +10,5 @@ extras.txt
 # Optional: ignore log or temp files
 *.log
 *.tmp
+#temp, ignore assets due to bad internet
+assets/
